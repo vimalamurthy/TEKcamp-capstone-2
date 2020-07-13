@@ -7,10 +7,12 @@ public class Hangman{
     private String word;
     private static int life = 6;
     char[] filler;
+    Logger logFile;
 
     public Hangman(String word, int life) {
         this.word = word.toUpperCase();
         this.life = life;
+        logFile = Logger.getInstance();
     }
 
     public String getWord() {
@@ -50,17 +52,16 @@ public class Hangman{
         ArrayList<Character> aList = new ArrayList<Character>();
         while (this.getLife() > 0) {
             try {
-                System.out.println("life " + this.getLife());
+                logFile.log("life "+this.getLife());
                 char temp = getValue;
                 char x = Character.toUpperCase(temp);
-                System.out.println("Alphabet from textfield is : " + x + " and contains x is " + aList.contains(x));
+                logFile.log("Alphabet from textfield is : " + x + " and contains x is " + aList.contains(x));
 
                 if (aList.contains(x)) {
-                    System.out.println("Alphabet already tried.. ");
+                    logFile.log("Alphabet already tried.. ");
                 }
                 aList.add(x);
                 if (word.contains(x + "")) {
-                    System.out.println("Inside if loop.. with value of x - " +x);
                     for (int y = 0; y < word.length(); y++) {
                         if (word.charAt(y) == x) {
                             filler[y] = x;
@@ -71,29 +72,29 @@ public class Hangman{
                     this.setLife(--this.life);
                 }
             } catch (Exception e){
-                System.out.println("Invalid input");
+                logFile.log("Invalid input");
             }
             break;
         }
 
         if (this.getLife() == 0) {
-            System.out.println("You lose");
+            logFile.log("You Lose");
         }
-        System.out.println("Life before return is " +this.getLife());
+        logFile.log("Life before return is " +this.getLife());
         return filler;
     }
 
-    // Method that checks the result
+    // Method that checks if the result matches the guess word and prints output.
 
     public boolean checkResult(){
         boolean win = false;
         if (word.equals(String.valueOf(filler))) {
-            System.out.println(filler);
-            System.out.println("Congratulations - YOU WIN");
+            logFile.log(String.valueOf(filler));
+            logFile.log("Congratulations - YOU WIN");
             win = true;
         }
-        System.out.println(filler);
-        System.out.println("You can try " + life + " times");
+        logFile.log(String.valueOf(filler));
+        logFile.log("You can try " + life + " times");
         return win;
     }
 }

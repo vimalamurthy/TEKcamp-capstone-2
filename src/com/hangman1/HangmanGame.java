@@ -4,7 +4,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-abstract class HangmanDisplay extends JFrame {
+abstract class HangmanGame extends JFrame implements IGame
+{
 
     JPanel panel = new JPanel();
     JPanel textPanel = new JPanel();
@@ -12,11 +13,12 @@ abstract class HangmanDisplay extends JFrame {
     JLabel lifeLabel = new JLabel();
     JLabel mysteryWord = new JLabel("Word to find : ");
     String chosenWord1 = chosenWord();
+    Logger logFile;
 
     Hangman h1 = new Hangman(chosenWord1, 6);
 
     // Constructor
-    HangmanDisplay() {
+    HangmanGame() {
         super("Hangman");
 
         setSize(900,600);
@@ -26,11 +28,24 @@ abstract class HangmanDisplay extends JFrame {
         addMenuBar();
         addImagePanel();
         addTextPanel();
+        logFile = Logger.getInstance();
     }
 
-    // Abstract methods to implement the input word and setting up textPanel for user input
+    // Overriding the method from the Interface to display instructions for game.
+
+    @Override
+    public void instructions() {
+        JOptionPane.showMessageDialog(HangmanGame.super.getContentPane(), "There are two game options to choose from - \n" +
+                " 1. Play with computer, \n" +
+                " 2. Play with another player. ");
+    }
+
+    // Abstract methods that will be implemented in the child class for accepting the input word.
 
     abstract String chosenWord();
+
+    //Abstract methods implemented by the child class for setting up textPanel.
+
     abstract void addTextPanel();
 
     // Menubar for different game options
@@ -46,27 +61,36 @@ abstract class HangmanDisplay extends JFrame {
         options.add(optionGame1);
         options.add(optionGame2);
 
+        // Action listener with LAMBDA function for selecting the game to play with computer.
+
         optionGame1.addActionListener(ae-> {
             try {
+
                 this.setVisible(false);
                 this.dispose();
 
-                HangmanDisplay frame = new HangmanSinglePlayer();
+                HangmanGame frame = new HangmanSinglePlayer();
                 frame.setVisible(true);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(HangmanDisplay.super.getContentPane(), "Invalid action " +e);
+                logFile.log("Invalid action"+e);
+                JOptionPane.showMessageDialog(HangmanGame.super.getContentPane(), "Invalid action " +e);
             }
         });
+
+        // Action listener with LAMBDA function for selecting the game to play with another player.
 
         optionGame2.addActionListener(ae-> {
             try {
                 this.setVisible(false);
                 this.dispose();
-
-                HangmanDisplay frame = new HangmanTwoPlayers();
+                System.out.println("Before creating the object");
+                HangmanGame frame = new HangmanTwoPlayers();
+                System.out.println("After creating the object");
                 frame.setVisible(true);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(HangmanDisplay.super.getContentPane(), "Invalid action " +e);
+                //logFile.log("Invalid action"+e.printStackTrace(););
+                System.out.println(e);
+                JOptionPane.showMessageDialog(HangmanGame.super.getContentPane(), "From option2 - Invalid action " +e);
             }
         });
 
@@ -78,16 +102,11 @@ abstract class HangmanDisplay extends JFrame {
         help.add(instructions);
         menuBar.add(help);
 
+        // Action listener to display the instructions for game.
+
         instructions.addActionListener(ae->{
             try{
-                this.setVisible(false);
-                this.dispose();
-                JPanel instructionsPanel = new JPanel();
-                JTextArea gamedetails = new JTextArea("TextArea display",20,25);
-
-                instructionsPanel.add(gamedetails);
-                add(instructionsPanel);
-                setVisible(true);
+                this.instructions();
 
             } catch (Exception e) {
 
@@ -97,11 +116,14 @@ abstract class HangmanDisplay extends JFrame {
         JMenu quit = new JMenu("Quit");
         JMenuItem exit = new JMenuItem("Exit game ");
 
+        // Action listener to quit the game.
+
         exit.addActionListener(ae-> {
             try {
                 dispose();
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(HangmanDisplay.super.getContentPane(), "Invalid action " +e);
+                logFile.log("Invalid action"+e);
+                JOptionPane.showMessageDialog(HangmanGame.super.getContentPane(), "Invalid action " +e);
             }
         });
 
@@ -144,7 +166,8 @@ abstract class HangmanDisplay extends JFrame {
             case 0:
                 imgLabel.setIcon(new ImageIcon("C:\\Vimala\\hangman 0.png"));
                 imgLabel.repaint();
-                JOptionPane.showMessageDialog(HangmanDisplay.super.getContentPane(), "Sorry you lose ");
+                logFile.log("Sorry you lose");
+                JOptionPane.showMessageDialog(HangmanGame.super.getContentPane(), "Sorry you lose ");
                 break;
             case 1:
                 imgLabel.setIcon(new ImageIcon("C:\\Vimala\\hangman 1.png"));
@@ -156,6 +179,7 @@ abstract class HangmanDisplay extends JFrame {
                 lifeLabel.setForeground(Color.red);
                 break;
             case 3:
+
                 imgLabel.setIcon(new ImageIcon("C:\\Vimala\\hangman 3.png"));
                 imgLabel.repaint();
                 break;

@@ -7,12 +7,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 
-class HangmanTwoPlayers extends HangmanDisplay {
+class HangmanTwoPlayers extends HangmanGame implements IGame{
 
     JLabel word;
     JPasswordField acceptWord;
     String chosenWord1;
     Hangman h1;
+    Logger logFile;
 
     // constructor
     HangmanTwoPlayers() {
@@ -21,38 +22,58 @@ class HangmanTwoPlayers extends HangmanDisplay {
         setSize(900,600);
         setLayout(new GridLayout(1,2));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        logFile = Logger.getInstance();
     }
 
+    // Implementing the parent method to display random word, its empty as user input is accepted here.
     public String chosenWord(){
         return " ";
     }
 
-    // Adding the menubar with event handling
+
+    @Override
+    public void instructions() {
+        super.instructions();
+        JOptionPane.showMessageDialog(HangmanTwoPlayers.super.getContentPane(), "2. Play with another player:\n" +
+                " \n" +
+                " Player1 enters the word and Player2 guesses the word.\n" +
+                " \n" +
+                " The Player2 enters one character at a time to find the word. \n" +
+                " \n" +
+                " If the guess is correct, the matching character is displayed appropriately, else the number of tries \n" +
+                " reduces by one.\n" +
+                " \n" +
+                " If the player2 gets the word correct within 6 tries, player2 wins. Otherwise player1 looses the game.");
+    }
+
+    // Calling the parent method to add the menubar with appropriate event handling
 
     public void addMenuBar() {
         super.addMenuBar();
     }
 
-    //Adding the panel to display hangman image
+    //Calling the parent method to add the panel to display hangman image
 
     public void addImagePanel(){
         super.addImagePanel();
     }
 
-    //Adding the panel for displaying game details
+    // Adding the text panel to accept the word to find from one player and accepting user input from another player
+    // Error and exception handling for inappropriate entries from user.
 
     public void addTextPanel() {
 
         JPanel textPanel = new JPanel();
-        System.out.println("Mystery word: " +chosenWord1);
+        //  logFile.log("Mystery word: " +chosenWord1);
+        System.out.println("Chosenword1: Two Players: " +chosenWord1);
 
         textPanel.setLayout(new GridLayout(10,1));
         textPanel.setPreferredSize(new Dimension(300, 350));
         textPanel.setBorder(new EmptyBorder(2, 3, 2, 3));
 
-       // JLabel mysteryWord = new JLabel("Find Word: ");
         mysteryWord.setFont(new Font("Arial Black", Font.BOLD, 22));
+
+        System.out.println("Mystery word : Two Players: " +mysteryWord);
 
         word = new JLabel("");
         word.setFont(new Font("Arial Black", Font.BOLD, 22));
@@ -63,6 +84,7 @@ class HangmanTwoPlayers extends HangmanDisplay {
         chosenWord1 = String.valueOf(acceptWord.getPassword());
         h1 = new Hangman(chosenWord1, 6);
 
+        // Action Listener to accept the word to find from the player and checking for proper input.
         getWordBtn.addActionListener(ae ->{
             try {
                 JOptionPane.showMessageDialog(HangmanTwoPlayers.super.getContentPane(), "Continue " );
@@ -70,13 +92,16 @@ class HangmanTwoPlayers extends HangmanDisplay {
                 getWordBtn.setVisible(false);
                 chosenWord1 = String.valueOf(acceptWord.getPassword());
                 h1 = new Hangman(chosenWord1, 6);
-                System.out.println("h1.guess "+String.valueOf(h1.guess()) );
+                logFile.log("h1.guess "+String.valueOf(h1.guess()) );
+                //System.out.println("h1.guess "+String.valueOf(h1.guess()) );
                 word.setText(String.valueOf(h1.guess()));
                 word.setVisible(true);
-                System.out.println("Inside Button Action.." +chosenWord1);
+                //System.out.println("Inside Button Action.." +chosenWord1);
+                logFile.log("Inside Button Action.." +chosenWord1);
 
             } catch (Exception e){
-                System.out.println("Exception handling.. Invalid input");
+                //System.out.println("Exception handling.. Invalid input");
+                logFile.log("Exception handling.. Invalid input");
             }
         });
 
@@ -102,14 +127,14 @@ class HangmanTwoPlayers extends HangmanDisplay {
 
         lifeLabel = new JLabel("Life Remaining :  "+h1.getLife());
         lifeLabel.setFont(new Font("Times New Roman", Font.BOLD, 20));
-       // lifeLabel.setForeground(Color.green);
 
-        //Using Lambdas for action listener.
 
+        // Action listener to accept input from the second player to check if the word to find matches the player's guess.
         okButton.addActionListener(e ->{
             try{
                 char checkAplhabet = userText.getText().charAt(0);
                 if (userText.getText().length()>1){
+                    logFile.log("More than one character entered. First character will be accepted.");
                     JOptionPane.showMessageDialog(HangmanTwoPlayers.super.getContentPane(), "More than one character entered. First character will be accepted.");
                 }
                 if ((checkAplhabet >= 'a' && checkAplhabet <= 'z') || (checkAplhabet >= 'A' && checkAplhabet <= 'Z')) {
@@ -119,16 +144,19 @@ class HangmanTwoPlayers extends HangmanDisplay {
                     word.setText(String.valueOf(retVal));
                     lifeLabel.setText(String.valueOf("Life remaining is : " + h1.getLife()));
                     if (h1.checkResult()) {
+                        logFile.log("Congratulations.. You win");
                         JOptionPane.showMessageDialog(HangmanTwoPlayers.super.getContentPane(), "Congratulations.. You win");
                     }
                     changeImage();
                 }
                 else {
+                    logFile.log(" Invalid input. Please enter an alphabet. ");
                     JOptionPane.showMessageDialog(HangmanTwoPlayers.super.getContentPane(), " Invalid input. Please enter an alphabet. ");
                     userText.setText("");
                 }
             }
             catch (StringIndexOutOfBoundsException strIndexException){
+                logFile.log(" No input. Please enter an alphabet. " +strIndexException);
                 JOptionPane.showMessageDialog(HangmanTwoPlayers.super.getContentPane(), " No input. Please enter an alphabet. " +strIndexException);
             }
 
@@ -150,7 +178,7 @@ class HangmanTwoPlayers extends HangmanDisplay {
 
     }
 
-    // Method that changes the hangman image for each wrong try
+    // Calling method from the parent that changes the hangman image for each wrong try
 
     public void changeImage(){
         super.changeImage();
