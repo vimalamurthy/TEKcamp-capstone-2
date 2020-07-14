@@ -3,6 +3,7 @@ package com.hangman1;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 abstract class HangmanGame extends JFrame implements IGame
 {
@@ -40,7 +41,12 @@ abstract class HangmanGame extends JFrame implements IGame
                 " 2. Play with another player. ");
     }
 
-    // Abstract methods that will be implemented in the child class for accepting the input word.
+    @Override
+    public void license() {
+        JOptionPane.showMessageDialog(HangmanGame.super.getContentPane(), "License Agreement : \n Terms and conditions: \n " +
+                "The user agrees to the terms and conditions of the game.");
+    }
+// Abstract methods that will be implemented in the child class for accepting the input word.
 
     abstract String chosenWord();
 
@@ -83,9 +89,7 @@ abstract class HangmanGame extends JFrame implements IGame
             try {
                 this.setVisible(false);
                 this.dispose();
-                System.out.println("Before creating the object");
                 HangmanGame frame = new HangmanTwoPlayers();
-                System.out.println("After creating the object");
                 frame.setVisible(true);
             } catch (Exception e) {
                 //logFile.log("Invalid action"+e.printStackTrace(););
@@ -98,9 +102,22 @@ abstract class HangmanGame extends JFrame implements IGame
 
         JMenu help = new JMenu("Help");
         JMenuItem instructions = new JMenuItem("Game Instructions ");
+        JMenuItem license = new JMenuItem("License ");
 
         help.add(instructions);
+        help.add(license);
         menuBar.add(help);
+
+        // Action listener to display the license agreement
+
+        license.addActionListener(ae->{
+            try{
+                this.license();
+
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        });
 
         // Action listener to display the instructions for game.
 
@@ -109,7 +126,7 @@ abstract class HangmanGame extends JFrame implements IGame
                 this.instructions();
 
             } catch (Exception e) {
-
+                System.out.println(e);
             }
         });
 

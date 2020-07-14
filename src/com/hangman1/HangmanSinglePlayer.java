@@ -1,5 +1,4 @@
 package com.hangman1;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -10,6 +9,8 @@ import java.util.Random;
 class HangmanSinglePlayer extends HangmanGame implements IGame{
 
     Logger logFile;
+
+
     // constructor
     HangmanSinglePlayer() {
         super();
@@ -35,6 +36,11 @@ class HangmanSinglePlayer extends HangmanGame implements IGame{
                 " If the player gets the word correct within 6 tries, the player wins. Otherwise the player looses the game. ");
     }
 
+    @Override
+    public void license() {
+        super.license();
+    }
+
     // Generate the mystery word.
     public String chosenWord(){
         Random random = new Random();
@@ -57,8 +63,8 @@ class HangmanSinglePlayer extends HangmanGame implements IGame{
     public void addTextPanel() {
 
         JPanel textPanel = new JPanel();
-//        logFile.log("Mystery word: " +chosenWord1);
-        //       System.out.println("Mystery word: " +chosenWord1);
+
+        System.out.println("Mystery word: " +chosenWord1);
 
         textPanel.setLayout(new GridLayout(10,1));
         textPanel.setPreferredSize(new Dimension(300, 350));

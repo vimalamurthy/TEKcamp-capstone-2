@@ -5,7 +5,10 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 class HangmanTwoPlayers extends HangmanGame implements IGame{
 
@@ -25,12 +28,12 @@ class HangmanTwoPlayers extends HangmanGame implements IGame{
         logFile = Logger.getInstance();
     }
 
-    // Implementing the parent method to display random word, its empty as user input is accepted here.
+    // Implementing the parent method to display random word, user input is accepted in this game option.
     public String chosenWord(){
         return " ";
     }
 
-
+    // Override method to display the game instructions for the Hangman with two players.
     @Override
     public void instructions() {
         super.instructions();
@@ -44,6 +47,11 @@ class HangmanTwoPlayers extends HangmanGame implements IGame{
                 " reduces by one.\n" +
                 " \n" +
                 " If the player2 gets the word correct within 6 tries, player2 wins. Otherwise player1 looses the game.");
+    }
+
+    @Override
+    public void license() {
+        super.license();
     }
 
     // Calling the parent method to add the menubar with appropriate event handling
@@ -64,8 +72,6 @@ class HangmanTwoPlayers extends HangmanGame implements IGame{
     public void addTextPanel() {
 
         JPanel textPanel = new JPanel();
-        //  logFile.log("Mystery word: " +chosenWord1);
-        System.out.println("Chosenword1: Two Players: " +chosenWord1);
 
         textPanel.setLayout(new GridLayout(10,1));
         textPanel.setPreferredSize(new Dimension(300, 350));
@@ -73,16 +79,40 @@ class HangmanTwoPlayers extends HangmanGame implements IGame{
 
         mysteryWord.setFont(new Font("Arial Black", Font.BOLD, 22));
 
-        System.out.println("Mystery word : Two Players: " +mysteryWord);
-
         word = new JLabel("");
         word.setFont(new Font("Arial Black", Font.BOLD, 22));
         acceptWord =  new JPasswordField();
+
+        //Action listener to check the validity of input
+
+        acceptWord.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                char ch = e.getKeyChar();
+                String remainstring;
+                try {
+                    if (Character.isDigit(ch)){
+                        JOptionPane.showMessageDialog(null, "Please enter Alphabet Only !");
+                        remainstring = String.valueOf(acceptWord.getPassword());
+                        if (remainstring.length() >= 0) {
+                            remainstring = remainstring.substring(0, remainstring.length() - 1);
+                            acceptWord.setText(remainstring);
+                        }
+                    }
+                } catch (StringIndexOutOfBoundsException strException) {
+                    JOptionPane.showMessageDialog(null, "Exception - " + strException);
+                }
+            }
+        });
+
+        acceptWord.setFont(new Font("Arial Black", Font.BOLD, 22));
         acceptWord.setEchoChar('*');
 
         JButton getWordBtn = new JButton("Confirm");
         chosenWord1 = String.valueOf(acceptWord.getPassword());
         h1 = new Hangman(chosenWord1, 6);
+        System.out.println("Chosenword: Two Players: " +chosenWord1);
+
 
         // Action Listener to accept the word to find from the player and checking for proper input.
         getWordBtn.addActionListener(ae ->{
@@ -91,16 +121,18 @@ class HangmanTwoPlayers extends HangmanGame implements IGame{
                 acceptWord.setVisible(false);
                 getWordBtn.setVisible(false);
                 chosenWord1 = String.valueOf(acceptWord.getPassword());
+
                 h1 = new Hangman(chosenWord1, 6);
-                logFile.log("h1.guess "+String.valueOf(h1.guess()) );
-                //System.out.println("h1.guess "+String.valueOf(h1.guess()) );
+                logFile.log("h1.guess " + String.valueOf(h1.guess()));
+
                 word.setText(String.valueOf(h1.guess()));
                 word.setVisible(true);
-                //System.out.println("Inside Button Action.." +chosenWord1);
-                logFile.log("Inside Button Action.." +chosenWord1);
+
+                logFile.log("Inside Button Action.." + chosenWord1);
+
 
             } catch (Exception e){
-                //System.out.println("Exception handling.. Invalid input");
+
                 logFile.log("Exception handling.. Invalid input");
             }
         });
@@ -145,7 +177,7 @@ class HangmanTwoPlayers extends HangmanGame implements IGame{
                     lifeLabel.setText(String.valueOf("Life remaining is : " + h1.getLife()));
                     if (h1.checkResult()) {
                         logFile.log("Congratulations.. You win");
-                        JOptionPane.showMessageDialog(HangmanTwoPlayers.super.getContentPane(), "Congratulations.. You win");
+                        JOptionPane.showMessageDialog(HangmanTwoPlayers.super.getContentPane(), "Congratulations.. Player 2 win");
                     }
                     changeImage();
                 }
